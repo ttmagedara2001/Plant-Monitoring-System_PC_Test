@@ -5,7 +5,7 @@ import ActionButton from './ActionButton';
 import AutoModeToggle from './AutoModeToggle';
 import PageHeader from './PageHeader';
 import ValidationModal from './ValidationModal';
-import { updatePumpStatus, updateDeviceMode } from '../Service/deviceService';
+import { mockUpdatePumpStatus, mockUpdateDeviceMode } from '../Service/mockData';
 
 const DEFAULT_THRESHOLDS = {
   moisture: { min: 20, max: 60 },
@@ -91,21 +91,28 @@ const DeviceSettingsPage = ({ deviceId: propDeviceId }) => {
     const newMode = !autoMode;
     setAutoMode(newMode);
 
-    // Send mode change to backend via HTTP API
+    // Persist immediately so app-level auto-pump logic picks up the change
+    persistSettings({ autoMode: newMode });
+
+    // Notify the App component of the mode change
+    window.dispatchEvent(new CustomEvent('mode:change', {
+      detail: { deviceId, mode: newMode ? 'auto' : 'manual' },
+    }));
+
     try {
-      await updateDeviceMode(deviceId, newMode ? 'auto' : 'manual');
-      console.log(`✅ [API] Mode changed to: ${newMode ? 'auto' : 'manual'}`);
+      await mockUpdateDeviceMode(deviceId, newMode ? 'auto' : 'manual');
     } catch (error) {
-      console.error('❌ [API] Failed to send mode change:', error);
+      console.error('Failed to change mode:', error);
       // Revert on failure
       setAutoMode(!newMode);
+      persistSettings({ autoMode: !newMode });
     }
   };
 
   const handlePumpToggle = async () => {
     // Don't allow toggling in auto mode
     if (autoMode) {
-      console.log('⚠️ Pump control disabled in auto mode');
+      console.log('[Settings] Pump control is disabled in auto mode');
       return;
     }
 
@@ -113,8 +120,7 @@ const DeviceSettingsPage = ({ deviceId: propDeviceId }) => {
     const pumpCommand = nextPumpState ? 'ON' : 'OFF';
     const currentMoisture = statusValues.moisture !== 'unknown' ? Number(statusValues.moisture) : null;
 
-    console.log(`🔄 [Manual Mode] Toggling pump to ${pumpCommand}`);
-    console.log(`   📊 Current moisture: ${currentMoisture}`);
+    console.log(`[Settings] Toggling pump to ${pumpCommand} (moisture: ${currentMoisture})`);
 
     // Update local UI immediately for responsiveness
     setPumpOn(nextPumpState);
@@ -123,10 +129,14 @@ const DeviceSettingsPage = ({ deviceId: propDeviceId }) => {
     try {
       // Call API to send pump command
       // Payload: { deviceId, topic: "pmc/pump", payload: { pump: "on"|"off", moisture: <value> } }
-      await updatePumpStatus(deviceId, pumpCommand, 'pmc/pump', 'manual', currentMoisture);
-      console.log(`✅ [API] Pump command sent: ${pumpCommand}`);
+      await mockUpdatePumpStatus(deviceId, pumpCommand);
+
+      // Notify the App component so Dashboard shows the updated pump status
+      window.dispatchEvent(new CustomEvent('pump:change', {
+        detail: { deviceId, status: pumpCommand },
+      }));
     } catch (error) {
-      console.error('❌ [API] Failed to send pump command:', error);
+      console.error('Failed to send pump command:', error);
       // Revert UI state on failure
       setPumpOn(!nextPumpState);
       persistSettings({ pumpOn: !nextPumpState });
