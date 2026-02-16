@@ -1,0 +1,264 @@
+# MQTTX Testing Guide
+
+## Device Configuration
+
+**Primary Test Device:**
+
+- Device ID: `device0011233`
+- Owner: Your ProtoNest account
+- Used throughout this guide for examples
+
+**Alternative Test Devices:**
+
+- `device9988`
+- `device0000`
+- `device0001`
+- `device0002`
+
+> **Note:** The device ID must belong to your ProtoNest account. If you see 403 errors, verify device ownership in your ProtoNest dashboard.
+
+**MQTT Connection Details:**
+
+- **Broker Host:** `mqtt.protonest.co`
+- **Port:** `8883` (secure MQTT over TLS)
+- **Protocol:** `mqtts://`
+- **Username/Password:** Not required (authentication via cookies over HTTPS)
+
+**API Endpoints:**
+
+- **Base URL:** `https://api.protonestconnect.co/api/v1/user`
+- **WebSocket:** `wss://api.protonestconnect.co/ws` (cookie-based auth)
+
+---
+
+## Step 1: Install MQTTX
+
+Download from: https://mqttx.app/
+
+## Step 2: Connect to MQTT Broker
+
+**Connection Settings:**
+
+- **Host:** mqtt.protonest.co
+- **Port:** 8883
+- **Protocol:** mqtts://
+- **Client ID:** `device0011233` (recommended: use your actual device ID)
+- **Username / Password:** _leave empty_
+- **TLS / SSL:**
+  - Enable TLS
+  - Use system CA (no client certificate)
+  - Allow self‑signed: optional
+
+> In MQTTX:
+>
+> - Click "+ New Connection"
+> - Select `MQTTS/TLS`
+> - Fill host/port, set Client ID, enable TLS, then "Connect"
+
+---
+
+## Step 3: Subscribe to Topics
+
+Create a new **tab** in MQTTX and subscribe to:
+
+- `protonest/device0011233/stream/#`
+- `protonest/device0011233/state/#`
+
+This allows you to:
+
+- See all sensor messages the dashboard would consume
+- See any state/pump messages
+
+---
+
+## Step 4: Publish Sensor Data
+
+> All payloads are JSON, UTF‑8 encoded. Dashboard expects **string values** that can be parsed as numbers.
+
+### Temperature Data
+
+```text
+Topic: protonest/device0011233/stream/pmc/temperature
+Payload: {"temp":"25.5"}
+```
+
+### Moisture Data
+
+```text
+Topic: protonest/device0011233/stream/pmc/moisture
+Payload: {"moisture":"45.2"}
+```
+
+### Humidity Data
+
+```text
+Topic: protonest/device0011233/stream/pmc/humidity
+Payload: {"humidity":"65.8"}
+```
+
+### Light Data
+
+```text
+Topic: protonest/device0011233/stream/pmc/light
+Payload: {"light":"850"}
+```
+
+### Battery Data
+
+```text
+Topic: protonest/device0011233/stream/pmc/battery
+Payload: {"battery":"87.5"}
+```
+
+### Combined Sensor Packet
+
+```text
+Topic: protonest/device0011233/stream/pmc/all
+Payload: {
+  "temp": "25.5",
+  "moisture": "45.2",
+  "humidity": "65.8",
+  "light": "850",
+  "battery": "87.5"
+}
+```
+
+---
+
+## Step 5: Pump Control via MQTT
+
+```text
+Topic: protonest/device0011233/state/pmc/pump
+Payload: {"power":"ON","mode":"auto"}
+```
+
+```text
+Topic: protonest/device0011233/state/pmc/pump
+Payload: {"power":"OFF"}
+```
+
+Device feedback:
+
+```text
+Topic: protonest/device0011233/state/pmc/pump
+Payload: {"power":"on","mode":"manual"}
+```
+
+### Mode Control via MQTT
+
+```text
+Topic: protonest/device0011233/state/pmc/mode
+Payload: {"mode":"auto"}
+```
+
+```text
+Topic: protonest/device0011233/state/pmc/mode
+Payload: {"mode":"manual"}
+```
+
+---
+
+## Step 6: Mapping MQTT Messages to Dashboard UI
+
+When you publish payloads and they're forwarded to WebSocket:
+
+1. **Status Cards (top metrics)**
+   - `pmc/moisture` → "Soil Moisture" card
+   - `pmc/temperature` → "Temperature" card
+   - `pmc/humidity` → "Humidity" card
+   - `pmc/light` → "Light" card
+   - `pmc/battery` → "Battery" card
+
+2. **Pump Banner**
+   - `pmc/pump` with `"power":"ON"` → Green "Pump: ON" banner
+   - `pmc/pump` with `"power":"OFF"` → Blue "Pump: OFF" banner
+
+3. **Mode Indicator**
+   - `pmc/mode` with `"mode":"auto"` → Auto mode enabled
+   - `pmc/mode` with `"mode":"manual"` → Manual mode
+
+4. **Alert Banner**
+   - If `moisture` < `moistureMin` → red critical alert
+   - If `temperature` > `tempMax` → red warning alert
+
+5. **Auto Irrigation**
+   - If auto mode ON and moisture < min → pump ON command sent automatically via HTTP
+   - If manual mode and moisture < min → notification sent to user
+
+---
+
+## Step 7: Test Sequences
+
+### A. Basic Sensor Flow
+
+1. Connect MQTTX to `mqtt.protonest.co:8883`
+2. Subscribe to `protonest/device0011233/stream/#`
+3. Publish:
+   ```text
+   Topic: protonest/device0011233/stream/pmc/moisture
+   Payload: {"moisture":"15.0"}
+   ```
+4. Watch dashboard:
+   - "Soil Moisture" card shows `15.0%`
+   - Critical moisture alert appears
+
+### B. Pump Control Round‑Trip
+
+1. In dashboard, click **Pump** toggle in Settings
+2. Observe API request to `/update-state-details`
+3. Simulate device feedback in MQTTX:
+   ```text
+   Topic: protonest/device0011233/state/pmc/pump
+   Payload: {"power":"ON","mode":"manual"}
+   ```
+4. Dashboard shows pump ON
+
+---
+
+## Step 8: Dashboard Authentication
+
+The dashboard uses **Cookie-Based Authentication**:
+
+1. Login via `/get-token` sets HttpOnly cookies
+2. WebSocket connects to `wss://api.protonestconnect.co/ws`
+3. Browser sends cookies automatically (no token URL param)
+4. All API requests include `withCredentials: true`
+
+### Console Logs to Expect
+
+```
+✅ Login successful - cookies set by server
+🔌 Initializing WebSocket with cookie-based auth: wss://...
+✅ WebSocket Connected (cookie-based auth)
+🔔 Subscribed to /topic/stream/device0011233
+📡 [device0011233] Stream data received: {"moisture":"45.2"}
+```
+
+---
+
+## Troubleshooting
+
+### Dashboard Not Receiving Data
+
+1. Verify MQTTX connected to broker
+2. Check topic format matches exactly
+3. Verify device ID ownership
+4. Check dashboard WebSocket connected (green indicator)
+
+### Authentication Issues
+
+1. Cookie-based auth requires login first
+2. Check browser DevTools → Application → Cookies
+3. Verify `jwt` cookie exists after login
+4. If expired, refresh or re-login
+
+### Pump Commands Not Working
+
+1. Check device subscribed to `protonest/{deviceId}/state/pmc/#`
+2. Verify payload format: `{"power":"ON"}` (uppercase)
+3. Check dashboard has WebSocket connection
+
+---
+
+**Last Updated:** February 2026  
+**Version:** 2.1.0 (Cookie-Based Auth + pmc/ Topics)
