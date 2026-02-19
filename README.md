@@ -1,22 +1,22 @@
-# Plant Monitoring System - PC Dashboard
+﻿# Plant Monitoring System — PC Dashboard (Agri Cop)
 
-A real-time, interactive React dashboard for monitoring plant sensor data with WebSocket integration and cookie-based authentication.
+A fully self-contained React dashboard for monitoring plant health sensor data. Runs entirely in the browser with **no backend, no login, and no API keys required** — all data is generated locally via a realistic simulation engine.
 
 ## 🌱 Overview
 
-The Plant Monitoring System PC Dashboard displays live sensor data (moisture, temperature, humidity, light) from IoT devices monitoring plants/greenhouses. It provides real-time alerts, historical trending, and device control capabilities.
+The Agri Cop dashboard simulates a live IoT plant monitoring environment. Five demo greenhouse devices report sensor telemetry every 3 seconds, complete with historical trend charts, auto-irrigation logic, and configurable alert thresholds.
 
 **Key Features:**
 
-- ✅ Real-time sensor data updates via WebSocket
-- ✅ Cookie-based HttpOnly authentication (secure)
-- ✅ Multiple simultaneous alerts with configurable thresholds
-- ✅ Interactive charts with historical trending
+- ✅ Zero-backend demo mode — works completely offline
+- ✅ Five demo devices, each mapped to a distinct plant profile
+- ✅ Live sensor data updated every 3 seconds (moisture, temperature, humidity, light, battery)
+- ✅ Auto-irrigation: pump turns ON/OFF automatically when moisture crosses threshold
+- ✅ Manual pump control with mode tracking (auto / manual)
+- ✅ Critical alerts and notification system
+- ✅ 24-hour historical chart with day/night cycle simulation
+- ✅ Per-device threshold configuration, persisted in localStorage
 - ✅ Responsive design (desktop, tablet, mobile)
-- ✅ Device management and selection
-- ✅ Threshold configuration panel
-- ✅ CSV export for analysis
-- ✅ Graceful fallback with mock data when API unavailable
 - ✅ Seasonal visual effects
 
 ---
@@ -37,7 +37,7 @@ npm install
 # Start development server
 npm run dev
 
-# Open browser to http://localhost:5173
+# Open browser to http://localhost:3000
 ```
 
 ### Build for Production
@@ -47,155 +47,115 @@ npm run build
 npm run preview  # Preview production build locally
 ```
 
+### Deploy to GitHub Pages
+
+```bash
+npm run deploy
+```
+
 ---
 
-## 🔐 Authentication
+## 🌿 Demo Devices & Plant Profiles
 
-The application uses **Cookie-Based HttpOnly Authentication** for enhanced security.
+The app ships with five simulated greenhouse devices. Each device is mapped to a plant profile that defines its realistic sensor ranges:
 
-### How It Works
+| Device ID          | Plant       | Emoji | Health Status |
+| ------------------ | ----------- | ----- | ------------- |
+| `GH-A1-Tomato`     | Tomato      | 🍅    | Excellent     |
+| `GH-B2-Lettuce`    | Lettuce     | 🥬    | Good          |
+| `GH-C3-Aloe`       | Aloe Vera   | 🌵    | Good          |
+| `GH-D4-Basil`      | Sweet Basil | 🌿    | Fair          |
+| `GH-E5-Strawberry` | Strawberry  | 🍓    | Excellent     |
 
-1. **Login** (`POST /get-token`)
-   - Send email and secretKey in request body
-   - Server returns 200 OK with **no response body**
-   - JWT and Refresh Token are set as **HttpOnly cookies** automatically
-
-2. **API Requests**
-   - All requests include `withCredentials: true`
-   - Browser automatically sends cookies with each request
-   - No manual token attachment needed
-
-3. **Token Refresh** (`GET /get-new-token`)
-   - Server uses Refresh Token from cookie
-   - New tokens set as cookies automatically
-   - Transparent to the application
-
-4. **WebSocket Connection**
-   - Connect to `wss://api.protonestconnect.co/ws`
-   - No token query parameter needed
-   - Browser sends cookies with WebSocket handshake
-
-### Environment Variables
-
-```env
-# API Configuration (includes /user path)
-VITE_API_BASE_URL=https://api.protonestconnect.co/api/v1/user
-
-# WebSocket Configuration
-VITE_WS_URL=wss://api.protonestconnect.co/ws
-
-# Device ID
-VITE_DEVICE_ID=your-device-id
-
-# Auto-login credentials (optional)
-VITE_USER_EMAIL=your-email@example.com
-VITE_USER_SECRET=your-secretKey
-```
+Switch devices using the dropdown in the **Header**. Each device has independent settings stored in localStorage.
 
 ---
 
 ## 📊 Core Features
 
-### 1. Real-Time Sensor Monitoring
+### 1. Live Sensor Simulation
 
-Live WebSocket updates for 6 key metrics:
+Mock sensor readings are generated every **3 seconds** from `src/Service/mockData.js` using realistic range constraints per plant profile.
 
-- **Moisture (0-100%)** - Soil/substrate moisture level with auto pump trigger
-- **Temperature (°C)** - Ambient temperature monitoring
-- **Humidity (0-100%)** - Air humidity tracking
-- **Light (lux)** - Light intensity measurement
-- **Battery (0-100%)** - Device battery level
-- **Pump Status** - Real-time pump state (ON/OFF) with mode indicator (auto/manual)
+Sensors monitored:
 
-### 2. Automated Irrigation System
+| Sensor      | Unit   | Description                            |
+| ----------- | ------ | -------------------------------------- |
+| Moisture    | %      | Soil moisture — drives auto-pump logic |
+| Temperature | °C     | Ambient temperature                    |
+| Humidity    | %      | Relative air humidity                  |
+| Light       | lux    | Light intensity                        |
+| Battery     | %      | Simulated device battery level         |
+| Pump Status | ON/OFF | Pump state with mode indicator         |
 
-Intelligent pump control based on configurable moisture thresholds:
+### 2. Automated Irrigation
 
-- **Auto Mode** - Automatically turns pump ON when moisture < minimum threshold (default: 20%) via HTTP state update
-- **Auto Mode** - Pump automatically turns OFF when moisture ≥ minimum threshold
-- **Manual Mode Notification** - When moisture drops below minimum in manual mode, a notification alerts the user to turn on the pump
-- **Mode Sync** - Mode changes (auto/manual) sent to device via HTTP `pmc/mode` topic
-- **HTTP API Flow** - PC → `/update-state-details` (topic: `pmc/pump`) → Backend → MQTT → Device → Confirmation → WebSocket → UI Update
+Pump logic runs locally in `App.jsx`:
+
+- **Auto Mode** — Pump turns ON when moisture < `moistureMin`; turns OFF when moisture recovers. Commands debounced at 5 seconds.
+- **Manual Mode** — A warning notification fires (max once per 60 seconds) when moisture is low and the pump is still OFF. User must toggle the pump manually from Settings.
 
 ### 3. Manual Pump Control
 
-User-controlled pump operation with instant feedback:
+From the **Device Settings** page:
 
-- **Toggle Control** - One-click pump ON/OFF from settings panel
-- **Mode Tracking** - Commands sent with `mode: "manual"` to distinguish from automation
-- **Status Display** - Real-time pump status with color coding (green=ON, red=OFF)
-- **Loading States** - Visual feedback during command processing
+- Toggle pump ON/OFF with instant visual feedback
+- State changes dispatched via browser `CustomEvent` (`pump:change`, `mode:change`)
+- No HTTP calls — fully local
 
 ### 4. Historical Data Visualization
 
-Interactive charts showing sensor trends over time:
-
-- **Flexible Time Ranges** - Presets: 1min, 5min, 15min, 30min, 1h, 3h, 6h, 12h, 24h (default: 24h)
-- **Custom Ranges** - User-definable time range and interval (e.g., last 7h with 1min interval)
-- **Interval Options** - Auto, 1min, 5min, 15min, 30min, 1h
-- **Multi-Line Chart** - All sensors on one graph with Recharts
-- **CSV Export** - Download data for external analysis
-- **Responsive Design** - Zoom, pan, and tooltip interactions
+- 24 hours of chart data generated on demand
+- 4 data-points per hour (one every 15 min)
+- Day/night sinusoidal drift: temperature peaks at noon, humidity inversely correlated
+- Noise factor: 0.15 (configurable in `mockData.js`)
 
 ### 5. Threshold Configuration
 
-Fully customizable alert and automation thresholds:
+Per-device thresholds stored in `localStorage` under `settings_{deviceId}`:
 
-- **Moisture Thresholds** - Min/max for pump automation (default: 20%-70%)
-- **Temperature Thresholds** - Min/max for temperature alerts (default: 10°C-35°C)
-- **Humidity Thresholds** - Min/max for humidity alerts (default: 30%-80%)
-- **Light Thresholds** - Min/max for light alerts (default: 200-1000 lux)
-- **Battery Threshold** - Minimum battery level alert (default: 20%)
-- **Auto Mode Toggle** - Enable/disable automated pump control
-- **LocalStorage Persistence** - Settings saved per device
+| Sensor      | Default Min | Default Max |
+| ----------- | ----------- | ----------- |
+| Moisture    | 20%         | 70%         |
+| Temperature | 10°C        | 35°C        |
+| Humidity    | 30%         | 80%         |
+| Light       | 200 lux     | 1000 lux    |
+| Battery     | 20%         | —           |
 
-### 6. Multi-Device Support
+### 6. Notifications
 
-Seamless switching between multiple IoT devices:
-
-- **Device Selection** - Dropdown to switch active device
-- **Per-Device Settings** - Each device has its own threshold configuration
-- **WebSocket Resubscription** - Automatic topic switching when device changes
-- **Historical Data Reload** - Chart data refreshed for new device
+Critical-value transitions (e.g. moisture crossing below min) fire a notification via `NotificationContext`. Transitions are edge-triggered — the alert fires only once when the sensor first crosses the threshold, not on every update.
 
 ---
 
-## 🏗️ System Architecture
+## 🏗️ Architecture
 
-### Communication Flow (Cookie-Based Auth)
+The app is a single-page React application. There is **no network communication** at runtime.
 
-```
-┌──────────────┐    MQTT Publish     ┌──────────────┐
-│  IoT Device  │ ─────────────────→  │   Backend    │
-│  (MQTTX)     │                     │ MQTT Broker  │
-└──────────────┘                     └──────┬───────┘
-       ↑                                    │
-       │                                    │ WebSocket
-       │ MQTT Subscribe                     │ (Cookie Auth)
-       │                                    ↓
-       │                             ┌──────────────┐
-       │    ←─── HTTP API ─────────  │   Frontend   │
-       │      (with cookies)         │  Dashboard   │
-       └─────────────────────────────│  (React)     │
-         Device Confirmation         └──────────────┘
-```
-
-### Authentication Flow
+### Data Flow
 
 ```
-1. User Login (or Auto-Login from ENV)
-   POST /get-token → Sets HttpOnly Cookies
-                ↓
-2. WebSocket Connection
-   Connect to wss://...ws (cookies sent automatically)
-                ↓
-3. API Requests
-   All requests include withCredentials: true
-   Cookies sent automatically
-                ↓
-4. Token Refresh (on 400 "Invalid token")
-   GET /get-new-token → New cookies set automatically
+mockData.js ──generateLiveSensorData()──► App.jsx (setInterval 3s)
+                                               │
+                                          liveData state
+                                          /           \
+                                Dashboard.jsx    DeviceSettingsPage.jsx
+                                      │                   │
+                               StatusCards        PumpControlToggle
+                               HistoricalChart    AutoModeToggle
+                               ThresholdSection   ThresholdInput
 ```
+
+### Inter-Component Communication
+
+Components communicate via browser `CustomEvent`s dispatched on `window`:
+
+| Event              | Direction                | Payload                |
+| ------------------ | ------------------------ | ---------------------- |
+| `live:update`      | App → all                | `liveData` snapshot    |
+| `settings:updated` | DeviceSettingsPage → App | `{ deviceId }`         |
+| `pump:change`      | DeviceSettingsPage → App | `{ deviceId, status }` |
+| `mode:change`      | DeviceSettingsPage → App | `{ deviceId, mode }`   |
 
 ---
 
@@ -203,129 +163,109 @@ Seamless switching between multiple IoT devices:
 
 ```
 src/
-├── Components/                      # React Components
-│   ├── Dashboard.jsx               # Main dashboard with sensor display
-│   ├── Header.jsx                  # Navigation bar with device selector
-│   ├── StatusBar.jsx               # Tab navigation component
-│   ├── DeviceSettingsPage.jsx      # Full device settings page
-│   ├── HistoricalChartTest.jsx     # Recharts visualization
-│   ├── ErrorBoundary.jsx           # Error handling wrapper
-│   └── ... (reusable components)
+├── Components/
+│   ├── Dashboard.jsx              # Main dashboard with sensor cards
+│   ├── Header.jsx                 # Navigation bar with device selector
+│   ├── StatusBar.jsx              # Tab navigation component
+│   ├── DeviceSettingsPage.jsx     # Device settings & pump control page
+│   ├── HistoricalChartTest.jsx    # Recharts 24-hour trend visualization
+│   ├── ErrorBoundary.jsx          # React error boundary wrapper
+│   ├── ActionButton.jsx           # Reusable action button
+│   ├── AutoModeToggle.jsx         # Auto/manual mode toggle
+│   ├── CommandStatusMessage.jsx   # Command feedback display
+│   ├── ConnectionStatusPanel.jsx  # Connection status indicator
+│   ├── PageHeader.jsx             # Page-level heading
+│   ├── PumpControlToggle.jsx      # Pump ON/OFF toggle
+│   ├── SeasonalEffects.jsx        # Seasonal visual decorations
+│   ├── SensorStatusIndicator.jsx  # Per-sensor status icon
+│   ├── SensorToggleToolbar.jsx    # Chart sensor visibility toggles
+│   ├── StatusCard.jsx             # Individual sensor metric card
+│   ├── ThresholdInput.jsx         # Single threshold input field
+│   ├── ThresholdSection.jsx       # Grouped threshold settings
+│   └── ValidationModal.jsx        # Confirmation/validation dialog
 │
-├── Service/                         # API & Communication Layer
-│   ├── api.js                      # Axios client with cookie auth
-│   ├── authService.js              # Login/session management
-│   ├── deviceService.js            # Device & sensor data API
-│   └── webSocketClient.js          # STOMP WebSocket client
+├── Context/
+│   └── NotificationContext.jsx    # App-wide notification system
 │
-├── Context/                         # React Context
-│   ├── AuthContext.jsx             # Authentication state management
-│   └── NotificationContext.jsx     # App-wide notification system
+├── Service/
+│   └── mockData.js                # Demo data generator & plant profiles
 │
-├── App.jsx                          # Main app with WebSocket integration
-├── main.jsx                         # React entry point
-└── index.css                        # Global styles
+├── App.jsx                        # Root component — state, intervals, logic
+├── config.demo.js                 # Demo configuration constants
+├── main.jsx                       # React entry point
+└── index.css                      # Global styles
+```
+
+---
+
+## 🔧 Customisation
+
+All simulation parameters live in `src/Service/mockData.js`.
+
+### Triggering Alerts
+
+**Low Water warning** — Set the Tomato profile's typical moisture below the threshold (20%):
+
+```javascript
+moisture: { min: 5, max: 15, typical: 10 }
+```
+
+**High Temperature warning** — Set typical temperature above 35°C:
+
+```javascript
+temperature: { min: 30, max: 42, typical: 38 }
+```
+
+### Chart Smoothness
+
+```javascript
+const NOISE_FACTOR = 0.15;  // 0 = flat lines, 1 = very noisy
+const POINTS_PER_HOUR = 4;  // historical readings per hour
+```
+
+### Live Update Interval
+
+In `src/config.demo.js`:
+
+```javascript
+LIVE_UPDATE_INTERVAL_MS: 3000  // milliseconds between sensor updates
 ```
 
 ---
 
 ## 🔌 Technology Stack
 
-### Frontend
+| Package      | Version | Purpose                        |
+| ------------ | ------- | ------------------------------ |
+| React        | 18.2.0  | Component-based UI framework   |
+| Vite         | 7.2.2   | Build tool & dev server (port 3000) |
+| Tailwind CSS | 3.4.0   | Utility-first CSS framework    |
+| Recharts     | 2.10.3  | Historical chart visualization |
+| Lucide React | 0.263.1 | Icon library                   |
 
-- **React 18.2.0** - Component-based UI framework
-- **Vite 7.2.2** - Fast build tool and dev server
-- **React Router 6.20.0** - Client-side routing
-- **Tailwind CSS 3.4.0** - Utility-first CSS framework
-- **Lucide React 0.263.1** - Modern icon library
-
-### Data & Communication
-
-- **@stomp/stompjs 7.2.1** - WebSocket STOMP protocol
-- **Axios 1.6.2** - HTTP client with cookie support
-- **Recharts 2.10.3** - Interactive charting library
-
-### Backend Integration
-
-- **WebSocket Server** - STOMP over WebSocket for real-time data
-- **REST API** - HTTP endpoints with cookie authentication
-- **MQTT Broker** - Device communication protocol
-- **HttpOnly Cookies** - Secure token storage
-
----
-
-## 📡 API Reference
-
-**Base URL:** `https://api.protonestconnect.co/api/v1/user`  
-**WebSocket URL:** `wss://api.protonestconnect.co/ws`
-
-### Authentication Endpoints
-
-| Endpoint         | Method | Description                   |
-| ---------------- | ------ | ----------------------------- |
-| `/get-token`     | POST   | Login - sets HttpOnly cookies |
-| `/get-new-token` | GET    | Refresh tokens via cookie     |
-
-### Data Endpoints
-
-| Endpoint                        | Method | Description                              |
-| ------------------------------- | ------ | ---------------------------------------- |
-| `/get-stream-data/device`       | GET    | Fetch all historical data for device     |
-| `/get-stream-data/device/topic` | POST   | Fetch historical data for specific topic |
-| `/get-state-details/device`     | POST   | Get current device state                 |
-| `/update-state-details`         | POST   | Send commands to device (pump, mode)     |
-
-### MQTT Topics (pmc/ prefix)
-
-| Topic             | Description                      |
-| ----------------- | -------------------------------- |
-| `pmc/temperature` | Temperature sensor data          |
-| `pmc/humidity`    | Humidity sensor data             |
-| `pmc/moisture`    | Soil moisture sensor data        |
-| `pmc/light`       | Light intensity data             |
-| `pmc/battery`     | Battery level data               |
-| `pmc/pump`        | Pump control commands (ON/OFF)   |
-| `pmc/mode`        | Mode state updates (auto/manual) |
-
-### WebSocket Topics
-
-- **Stream Data**: `/topic/stream/{deviceId}` - All sensor updates
-- **State Data**: `/topic/state/{deviceId}` - Pump/mode status updates
-
----
-
-## 📚 Documentation
-
-| Document                        | Purpose                             |
-| ------------------------------- | ----------------------------------- |
-| **MQTTX_TESTING_GUIDE.md**      | 🧪 MQTT testing with MQTTX client   |
-| **PROTONEST_SETUP.md**          | ⚙️ ProtoNest platform configuration |
-| **WEBSOCKET_IMPLEMENTATION.md** | 🔌 WebSocket client details         |
-| **README.md**                   | 📖 This documentation               |
+> **Note:** `@stomp/stompjs` and `axios` are present in `package.json` as legacy dependencies from a previous backend-connected version. They are not used in the current demo build.
 
 ---
 
 ## 🐛 Troubleshooting
 
-### WebSocket Not Connecting
+### Sensors Not Updating
 
-1. Verify you're authenticated (login succeeded)
-2. Check browser console for cookie-related errors
-3. Ensure `withCredentials: true` in requests
-4. For CORS issues, verify server allows credentials
+- Check the browser console for JavaScript errors.
+- The live-data interval restarts when the selected device changes. Switch away from the device and back to reset it.
 
-### Session Expired
+### Settings Not Persisting
 
-- On 400 "Invalid token" error, automatic refresh is attempted
-- If refresh fails, user is logged out
-- Re-login to get new session cookies
+- Settings are stored in `localStorage` under `settings_{deviceId}`. Open DevTools → Application → Local Storage to inspect or clear them.
 
-### Pump Not Responding
+### Chart Not Loading
 
-1. Check auto mode enabled in settings
-2. Verify device ownership
-3. Check console for API errors
-4. Verify WebSocket connection status
+- Historical data is generated asynchronously with a simulated 300–700 ms delay. If the chart stays empty, refresh the page.
+
+### Pump Not Responding in Auto Mode
+
+- Verify **Auto Mode** is toggled ON in Device Settings.
+- Auto-pump commands are debounced: a new command only fires after 5 seconds from the last one.
 
 ---
 
@@ -337,30 +277,28 @@ src/
 npm run deploy
 ```
 
-### Vercel
+Deploys to `https://ttmagedara2001.github.io/Plant-Monitoring-System_PC`
+
+### Vercel / Netlify
 
 ```bash
-npm install -g vercel
-vercel
-```
-
-### Docker
-
-```bash
-docker build -t plant-monitoring:latest .
-docker run -p 80:80 plant-monitoring:latest
+npm run build
+# Upload the dist/ folder
 ```
 
 ---
 
-**Status:** Production Ready  
+## 📚 Documentation
+
+| Document                        | Purpose                                             |
+| ------------------------------- | --------------------------------------------------- |
+| **README.md**                   | 📖 This file — demo mode overview                  |
+| **MQTTX_TESTING_GUIDE.md**      | 🧪 Hardware integration testing reference (future)  |
+| **PROTONEST_SETUP.md**          | ⚙️ ProtoNest platform integration guide (future)    |
+| **WEBSOCKET_IMPLEMENTATION.md** | 🔌 WebSocket/STOMP architecture reference (future)  |
+
+---
+
+**Status:** Demo Mode — Zero Backend  
 **Last Updated:** February 2026  
-**Version:** 2.1.0 (Cookie-Based Auth + pmc/ Topics)
-**Auth Method:** HttpOnly Cookies
-
----
-
-## 📞 Support
-
-**Issues**: Open GitHub issue with console logs  
-**Questions**: Use GitHub Discussions
+**Version:** 3.0.0 (Zero-Backend Demo / Sandbox)
