@@ -1,6 +1,14 @@
 import React from 'react';
 import { Moon, Sun, Settings, LayoutDashboard } from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
+
+// NOTE: This component was originally built for a react-router-dom layout.
+// The app now uses tab-based navigation (no Router), so we provide safe
+// no-op fallbacks for navigate/location to prevent runtime crashes if this
+// component is rendered outside a Router context.
+const _safeNavigate = (path) => {
+  // Tab navigation is handled by the parent; this is intentionally a no-op.
+};
+const _safeLocation = { pathname: '/' };
 
 /**
  * Compact status bar with icons and color codes for WebSocket, MQTT, and System status.
@@ -9,8 +17,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
  */
 
 const ConnectionStatusPanel = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate = _safeNavigate;
+  const location = _safeLocation;
 
   // Dark mode state (local only)
   const [darkMode, setDarkMode] = React.useState(() => {
