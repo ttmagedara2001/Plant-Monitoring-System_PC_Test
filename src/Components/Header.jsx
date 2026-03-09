@@ -162,7 +162,7 @@ const BrandBar = () => {
             {/* ── Right: "View Full Code" button ── */}
             <div className="flex items-center justify-end min-w-[160px]">
                 <a
-                    href="https://github.com/ttmagedara2001/Plant-Monitoring-System_PC_Test"
+                    href="https://github.com/ProtonestIoT/PC-Plant-monitoring-system"
                     target="_blank"
                     rel="noreferrer"
                     id="view-full-code-btn"
