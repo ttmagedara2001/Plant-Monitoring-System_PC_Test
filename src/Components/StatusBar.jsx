@@ -5,7 +5,7 @@ const StatusBar = ({ activeTab, setActiveTab }) => {
   return (
     // Navigation Bar - positioned below the fixed Header with a small gap
     // Header height: ~52px (mobile) / ~56px (sm) / ~60px (md) + top padding + gap
-    <div className="hidden landscape:flex  sm:flex w-full fixed top-[140px] landscape:top-[90px] sm:top-[68px] md:top-[106px] left-0 justify-center z-40 px-1 sm:px-2 md:px-4" >
+    <div className="hidden landscape:flex sm:flex w-full fixed top-[268px] landscape:top-[184px] sm:top-[192px] md:top-[210px] left-0 justify-center z-40 px-1 sm:px-2 md:px-4">
       <div className="w-full sm:w-[calc(100%-1rem)] md:w-[calc(100%-2rem)] max-w-7xl bg-white border-2 rounded-lg px-1 sm:px-2 py-0.5 sm:py-1 grid grid-cols-2 shadow-sm">
         <button
           onClick={() => typeof setActiveTab === 'function' ? setActiveTab('dashboard') : null}

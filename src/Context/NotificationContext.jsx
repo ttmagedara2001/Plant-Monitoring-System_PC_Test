@@ -19,7 +19,7 @@ export const NotificationProvider = ({ children }) => {
         }
         return parsed;
       }
-    } catch (e) {}
+    } catch (e) { }
     return [];
   });
 
@@ -27,7 +27,7 @@ export const NotificationProvider = ({ children }) => {
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(notifications));
-    } catch (e) {}
+    } catch (e) { }
   }, [notifications]);
 
   const addNotification = useCallback((payload) => {

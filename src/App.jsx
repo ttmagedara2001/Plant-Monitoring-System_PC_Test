@@ -269,8 +269,8 @@ function App() {
 
                 <StatusBar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-                {/* Main content — padding accounts for fixed Header + Nav */}
-                <main className="w-full pt-[100px] landscape:pt-[104px] sm:pt-[116px] md:pt-[128px]">
+                {/* Main content — padding accounts for fixed BrandBar (88px) + AgriCop Header + gap + StatusBar */}
+                <main className="w-full pt-[220px] landscape:pt-[196px] sm:pt-[232px] md:pt-[252px]">
                     {activeTab === 'dashboard' ? (
                         <Dashboard
                             deviceId={selectedDevice}

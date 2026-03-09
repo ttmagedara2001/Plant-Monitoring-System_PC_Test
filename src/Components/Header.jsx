@@ -1,11 +1,193 @@
+/**
+ * ============================================================================
+ * HEADER — Plant Monitoring System
+ * ============================================================================
+ *
+ * Two-tier fixed header:
+ *
+ *  ┌─────────────────────────────────────────────────────────┐  ← Brand Bar
+ *  │  [Protonest Logo + Go Back]  [Title ▼]  [View Full Code]│  88 px, #060B26
+ *  ├─────────────────────────────────────────────────────────┤  border #5530FA
+ *  │              AgriCop functional header                   │  existing white
+ *  └─────────────────────────────────────────────────────────┘
+ *
+ * ============================================================================
+ */
+
 import React, { useRef, useState, useEffect } from 'react';
 import {
     Sprout, LogOut, Wifi, Radio, Server,
-    LayoutDashboard, Settings, AlertTriangle, AlertCircle, Bell,
+    LayoutDashboard, Settings, AlertTriangle, AlertCircle, Bell, ChevronDown,
 } from 'lucide-react';
 import { useNotifications } from '../Context/NotificationContext';
 import { DEMO_DEVICE_LIST } from '../Service/mockData';
 import DEMO_CONFIG from '../config.demo';
+import protonestLogo from '../assets/images/logo.avif';
+import plantLogo from '../assets/images/logo_plant.png';
+
+// ─── Brand Bar ───────────────────────────────────────────────────────────────
+
+/**
+ * BrandBar — The top-most 88 px sticky stripe matching the Figma spec.
+ *
+ * • Background : solid #060B26
+ * • Bottom border: 1 px #5530FA
+ * • Left   : Protonest logo  +  "Go Back To Website" link
+ * • Center : "Plant Monitoring Systems" title with dropdown chevron
+ * • Right  : "View Full Code" frosted-glass button
+ */
+const BrandBar = () => {
+    const [titleOpen, setTitleOpen] = useState(false);
+
+    return (
+        <div
+            className="w-full flex items-center justify-between px-6 md:px-10"
+            style={{
+                position: 'relative',   /* own stacking context → dropdown renders above AgriCop tier */
+                zIndex: 300,
+                height: '88px',
+                backgroundColor: '#060B26',
+                borderBottom: '1px solid #5530FA',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
+            }}
+        >
+            {/* ── Left: Protonest logo + back link ── */}
+            <div className="flex items-center min-w-[160px]">
+                <a
+                    href="https://protonestconnect.co/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2.5 group"
+                    aria-label="Protonest — Go back to website"
+                >
+                    {/* Protonest M-logo */}
+                    <img
+                        src={protonestLogo}
+                        alt="Protonest logo"
+                        className="h-10 w-10 object-contain flex-shrink-0 transition-all duration-300 group-hover:scale-105"
+                    />
+                    {/* Back label — single line, matching Figma spec */}
+                    <span
+                        className="text-white/80 group-hover:text-white transition-colors duration-200 whitespace-nowrap"
+                        style={{
+                            fontFamily: "'Inter', system-ui, sans-serif",
+                            fontSize: '12px',
+                            fontWeight: 400,
+                        }}
+                    >
+                        ‹ Go Back To Website
+                    </span>
+                </a>
+            </div>
+
+            {/* ── Center: Title with dropdown chevron ── */}
+            <div className="flex-1 flex justify-center">
+                <button
+                    onClick={() => setTitleOpen(v => !v)}
+                    className="flex items-center gap-2 group px-4 py-2 rounded-xl hover:bg-white/5 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A48FFF]"
+                    aria-expanded={titleOpen}
+                    aria-haspopup="listbox"
+                    id="pms-title-btn"
+                >
+                    <span
+                        className="text-white select-none"
+                        style={{
+                            fontFamily: "'Inter', system-ui, sans-serif",
+                            fontSize: '20px',
+                            fontWeight: 500,
+                            letterSpacing: '-0.01em',
+                        }}
+                    >
+                        Plant Monitoring Systems
+                    </span>
+                    <ChevronDown
+                        className={`w-5 h-5 text-white/70 group-hover:text-white transition-all duration-300 ${titleOpen ? 'rotate-180 text-[#A48FFF]' : ''}`}
+                    />
+                </button>
+
+                {/* Drop-down flyout — z-[200] so it renders above the white AgriCop header */}
+                {titleOpen && (
+                    <div
+                        className="absolute top-[88px] left-1/2 -translate-x-1/2 z-[200] mt-1 w-72 rounded-xl shadow-2xl overflow-hidden"
+                        style={{
+                            background: 'rgba(6, 11, 38, 0.97)',
+                            border: '1px solid rgba(85, 48, 250, 0.5)',
+                            backdropFilter: 'blur(20px)',
+                            WebkitBackdropFilter: 'blur(20px)',
+                        }}
+                    >
+                        <div className="px-4 py-3 border-b border-white/10">
+                            <p className="text-[#A48FFF] text-xs font-semibold uppercase tracking-widest">Switch System</p>
+                        </div>
+                        {[
+                            {
+                                label: 'Plant Monitoring System',
+                                href: 'https://ambitious-bay-0d5177503.4.azurestaticapps.net/',
+                                active: true,
+                            },
+                            {
+                                label: 'Factory Management System',
+                                href: 'https://witty-grass-0d4e8e603.6.azurestaticapps.net/',
+                                active: false,
+                            },
+                            {
+                                label: 'Fleet Management System',
+                                href: 'https://gentle-flower-091576403.6.azurestaticapps.net/',
+                                active: false,
+                            },
+                        ].map(({ label, href, active }) => (
+                            <a
+                                key={label}
+                                href={href}
+                                target="_blank"
+                                rel="noreferrer"
+                                className={`w-full text-left px-4 py-3.5 text-sm transition-all duration-150 flex items-center gap-3 border-b border-white/5 last:border-0 ${active ? 'text-white bg-white/5' : 'text-white/70 hover:text-white hover:bg-white/5'}`}
+                                style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+                                onClick={() => setTitleOpen(false)}
+                            >
+                                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${active ? 'bg-[#A48FFF]' : 'bg-[#5530FA]'}`} />
+                                <span className="flex-1">{label}</span>
+                                {active && (
+                                    <span className="text-[10px] font-semibold text-[#A48FFF] uppercase tracking-wider bg-[#A48FFF]/10 px-1.5 py-0.5 rounded">
+                                        current
+                                    </span>
+                                )}
+                            </a>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* ── Right: "View Full Code" button ── */}
+            <div className="flex items-center justify-end min-w-[160px]">
+                <a
+                    href="https://github.com/ttmagedara2001/Plant-Monitoring-System_PC_Test"
+                    target="_blank"
+                    rel="noreferrer"
+                    id="view-full-code-btn"
+                    className="view-full-code-btn inline-flex items-center justify-center font-semibold text-white rounded-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A48FFF]"
+                    style={{
+                        width: '150px',
+                        height: '36px',
+                        fontFamily: "'Inter', system-ui, sans-serif",
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        background: 'rgba(164, 143, 255, 0.12)',
+                        border: '1px solid rgba(164, 143, 255, 0.3)',
+                        backdropFilter: 'blur(6px)',
+                        WebkitBackdropFilter: 'blur(6px)',
+                        borderRadius: '8px',
+                    }}
+                >
+                    View Full Code
+                </a>
+            </div>
+        </div>
+    );
+};
+
+// ─── Functional AgriCop Header Strip ─────────────────────────────────────────
 
 const Header = ({
     activeTab,
@@ -22,7 +204,7 @@ const Header = ({
 
     const statusText = { green: 'Online', yellow: 'Limited', red: 'Offline' };
 
-    const statusIcon = (status, Icon, label) => {
+    const statusIconEl = (status, Icon, label) => {
         const color = status === 'green' ? 'text-green-500' : status === 'yellow' ? 'text-yellow-500' : 'text-red-500';
         return (
             <div className="relative group flex items-center">
@@ -58,110 +240,117 @@ const Header = ({
     }, []);
 
     return (
-        <header className="fixed inset-x-0 top-0 flex justify-center z-50 px-1 sm:px-2 md:px-4 pt-1 sm:pt-2 md:pt-3">
-            <div className="w-full sm:w-[calc(100%-1rem)] md:w-[calc(100%-2rem)] max-w-7xl px-2 sm:px-4 md:px-7 bg-white border-2 rounded-lg py-1.5 sm:py-2 flex flex-col sm:flex-row justify-between items-center shadow-md">
+        <header className="fixed inset-x-0 top-0 z-50 flex flex-col" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
 
-                {/* Mobile bar */}
-                <div className="w-full flex items-center justify-between sm:hidden">
-                    <div className="flex items-center gap-1.5">
-                        <button aria-label="Open menu" onClick={() => setMobileOpen((v) => !v)} className="p-1 rounded-md hover:bg-gray-100">
-                            <svg className="w-5 h-5 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
-                        </button>
-                        <div className="flex items-center gap-1">
-                            <Sprout className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
-                            <span className="text-sm sm:text-base font-bold tracking-wide font-mono">Agri<span className="text-yellow-400">Cop</span></span>
+            {/* ── Tier 1: Brand Bar (Figma spec) ── */}
+            <BrandBar />
+
+            {/* ── Tier 2: AgriCop functional header ── */}
+            <div className="relative flex justify-center px-1 sm:px-2 md:px-4 pt-1 sm:pt-2">
+                <div className="w-full sm:w-[calc(100%-1rem)] md:w-[calc(100%-2rem)] max-w-7xl px-2 sm:px-4 md:px-7 bg-white border-2 rounded-lg py-1.5 sm:py-2 flex flex-col sm:flex-row justify-between items-center shadow-md">
+
+                    {/* Mobile bar */}
+                    <div className="w-full flex items-center justify-between sm:hidden">
+                        <div className="flex items-center gap-1.5">
+                            <button aria-label="Open menu" onClick={() => setMobileOpen((v) => !v)} className="p-1 rounded-md hover:bg-gray-100">
+                                <svg className="w-5 h-5 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+                            </button>
+                            <div className="flex items-center gap-1">
+                                <img src={plantLogo} alt="AgriCop logo" className="h-4 w-4 object-contain" />
+                                <span className="text-sm sm:text-base font-bold tracking-wide font-mono">Agri<span className="text-yellow-400">Cop</span></span>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-0.5">
+                                <Wifi className={`w-3.5 h-3.5 ${connected ? 'text-green-500' : 'text-red-500'}`} />
+                            </div>
+                            <NotificationsBell selectedDevice={currentDevice} />
                         </div>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                        <div className="flex items-center gap-0.5">
-                            <Wifi className={`w-3.5 h-3.5 ${connected ? 'text-green-500' : 'text-red-500'}`} />
+
+                    {/* Mobile menu panel */}
+                    {mobileOpen && (
+                        <div ref={mobileRef} className="sm:hidden absolute left-2 right-2 top-14 bg-white border rounded-lg shadow-lg z-50 px-3 py-3 max-h-[80vh] overflow-y-auto">
+                            <div className="flex flex-col gap-3">
+                                <div className="flex items-center justify-between pb-2 border-b">
+                                    <div className="flex items-center gap-2">
+                                        <Sprout className="h-5 w-5 text-green-600" />
+                                        <div className="font-semibold text-sm">AgriCop Menu</div>
+                                    </div>
+                                    <button onClick={() => setMobileOpen(false)} className="text-gray-500 text-sm px-2 py-1 hover:bg-gray-100 rounded">✕</button>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-2">
+                                    <button onClick={() => { setMobileOpen(false); typeof setActiveTab === 'function' && setActiveTab('dashboard'); }} className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition ${activeTab === 'dashboard' ? 'bg-green-100 text-green-700' : 'bg-gray-50 hover:bg-gray-100'}`}>
+                                        <LayoutDashboard className="w-4 h-4" /> Dashboard
+                                    </button>
+                                    <button onClick={() => { setMobileOpen(false); typeof setActiveTab === 'function' && setActiveTab('settings'); }} className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition ${activeTab === 'settings' ? 'bg-green-100 text-green-700' : 'bg-gray-50 hover:bg-gray-100'}`}>
+                                        <Settings className="w-4 h-4" /> Settings
+                                    </button>
+                                </div>
+
+                                <div className="pt-2">
+                                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Select Device</label>
+                                    <select value={currentDevice || ''} onChange={handleDeviceSelect} className="w-full mt-1 bg-white border border-green-300 text-gray-700 py-2.5 px-3 rounded-lg focus:ring-2 focus:ring-green-500 outline-none text-sm">
+                                        {deviceListLocal.map((dev) => <option key={dev} value={dev}>{dev}</option>)}
+                                    </select>
+                                </div>
+
+                                <div className="flex items-center justify-between pt-2 border-t">
+                                    <div className="flex items-center gap-2">
+                                        <div className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
+                                        <span className="text-xs text-gray-600">{connected ? 'Connected' : 'Disconnected'}</span>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between pt-2 border-t">
+                                    <div className="text-xs text-gray-600 truncate max-w-[60%]">User: {userId}</div>
+                                    <button onClick={() => window.location.reload()} className="text-red-500 text-sm flex items-center gap-1 px-2 py-1 hover:bg-red-50 rounded">
+                                        <LogOut className="w-3 h-3" /> Logout
+                                    </button>
+                                </div>
+                            </div>
                         </div>
+                    )}
+
+                    {/* Desktop: Logo + User */}
+                    <div className="hidden sm:flex items-center gap-4 mb-4 sm:mb-0">
+                        <div className="flex items-center gap-2">
+                            <img src={plantLogo} alt="AgriCop plant logo" className="h-7 w-7 object-contain" />
+                            <span className="text-2xl font-bold tracking-wide font-mono">
+                                Agri<span className="text-yellow-400">Cop</span>
+                            </span>
+                        </div>
+                        <div className="text-left text-xs ml-4">
+                            <div className="text-green-600 font-bold">Authentication: Successful</div>
+                            <div className="text-gray-600 font-mono">User: {userId}</div>
+                            <button onClick={() => window.location.reload()} className="text-red-500 mt-1 flex items-center gap-1">
+                                Logout <LogOut className="w-3 h-3" />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Desktop: Device Selector */}
+                    <div className="hidden sm:flex flex-1 justify-center items-center">
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm font-semibold text-gray-700">Select Device:</span>
+                            <select value={currentDevice || ''} onChange={handleDeviceSelect} className="bg-white border border-green-300 text-gray-700 py-1 px-2 rounded focus:ring-2 focus:ring-green-500 outline-none font-medium text-sm">
+                                {deviceListLocal.map((dev) => <option key={dev} value={dev}>{dev}</option>)}
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Desktop: Connection Status */}
+                    <div className="hidden sm:flex items-center gap-4 ml-6">
+                        {statusIconEl(wsStatus, Wifi, 'WebSocket')}
+                        {statusIconEl(mqttStatus, Radio, 'MQTT')}
+                        {statusIconEl(sysStatus, Server, 'System')}
+                    </div>
+
+                    {/* Desktop: Notifications Bell */}
+                    <div className="hidden sm:flex items-center gap-4 ml-8">
                         <NotificationsBell selectedDevice={currentDevice} />
                     </div>
-                </div>
-
-                {/* Mobile menu */}
-                {mobileOpen && (
-                    <div ref={mobileRef} className="sm:hidden absolute left-2 right-2 top-14 bg-white border rounded-lg shadow-lg z-50 px-3 py-3 max-h-[80vh] overflow-y-auto">
-                        <div className="flex flex-col gap-3">
-                            <div className="flex items-center justify-between pb-2 border-b">
-                                <div className="flex items-center gap-2">
-                                    <Sprout className="h-5 w-5 text-green-600" />
-                                    <div className="font-semibold text-sm">AgriCop Menu</div>
-                                </div>
-                                <button onClick={() => setMobileOpen(false)} className="text-gray-500 text-sm px-2 py-1 hover:bg-gray-100 rounded">✕</button>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-2">
-                                <button onClick={() => { setMobileOpen(false); typeof setActiveTab === 'function' && setActiveTab('dashboard'); }} className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition ${activeTab === 'dashboard' ? 'bg-green-100 text-green-700' : 'bg-gray-50 hover:bg-gray-100'}`}>
-                                    <LayoutDashboard className="w-4 h-4" /> Dashboard
-                                </button>
-                                <button onClick={() => { setMobileOpen(false); typeof setActiveTab === 'function' && setActiveTab('settings'); }} className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition ${activeTab === 'settings' ? 'bg-green-100 text-green-700' : 'bg-gray-50 hover:bg-gray-100'}`}>
-                                    <Settings className="w-4 h-4" /> Settings
-                                </button>
-                            </div>
-
-                            <div className="pt-2">
-                                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Select Device</label>
-                                <select value={currentDevice || ''} onChange={handleDeviceSelect} className="w-full mt-1 bg-white border border-green-300 text-gray-700 py-2.5 px-3 rounded-lg focus:ring-2 focus:ring-green-500 outline-none text-sm">
-                                    {deviceListLocal.map((dev) => (<option key={dev} value={dev}>{dev}</option>))}
-                                </select>
-                            </div>
-
-                            <div className="flex items-center justify-between pt-2 border-t">
-                                <div className="flex items-center gap-2">
-                                    <div className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
-                                    <span className="text-xs text-gray-600">{connected ? 'Connected' : 'Disconnected'}</span>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center justify-between pt-2 border-t">
-                                <div className="text-xs text-gray-600 truncate max-w-[60%]">User: {userId}</div>
-                                <button onClick={() => window.location.reload()} className="text-red-500 text-sm flex items-center gap-1 px-2 py-1 hover:bg-red-50 rounded">
-                                    <LogOut className="w-3 h-3" /> Logout
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Desktop: Logo + User */}
-                <div className="hidden sm:flex items-center gap-4 mb-4 sm:mb-0">
-                    <div className="flex items-center gap-2">
-                        <Sprout className="h-6 w-6 text-green-600" />
-                        <span className="text-2xl font-bold tracking-wide font-mono">
-                            Agri<span className="text-yellow-400">Cop</span>
-                        </span>
-                    </div>
-                    <div className="text-left text-xs ml-4">
-                        <div className="text-green-600 font-bold">Authentication: Successful</div>
-                        <div className="text-gray-600 font-mono">User: {userId}</div>
-                        <button onClick={() => window.location.reload()} className="text-red-500 mt-1 flex items-center gap-1">
-                            Logout <LogOut className="w-3 h-3" />
-                        </button>
-                    </div>
-                </div>
-
-                {/* Desktop: Device Selector */}
-                <div className="hidden sm:flex flex-1 justify-center items-center">
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-gray-700">Select Device:</span>
-                        <select value={currentDevice || ''} onChange={handleDeviceSelect} className="bg-white border border-green-300 text-gray-700 py-1 px-2 rounded focus:ring-2 focus:ring-green-500 outline-none font-medium text-sm">
-                            {deviceListLocal.map((dev) => (<option key={dev} value={dev}>{dev}</option>))}
-                        </select>
-                    </div>
-                </div>
-
-                {/* Desktop: Connection Status */}
-                <div className="hidden sm:flex items-center gap-4 ml-6">
-                    {statusIcon(wsStatus, Wifi, 'WebSocket')}
-                    {statusIcon(mqttStatus, Radio, 'MQTT')}
-                    {statusIcon(sysStatus, Server, 'System')}
-                </div>
-
-                {/* Desktop: Bell */}
-                <div className="hidden sm:flex items-center gap-4 ml-8">
-                    <NotificationsBell selectedDevice={currentDevice} />
                 </div>
             </div>
         </header>
@@ -170,7 +359,7 @@ const Header = ({
 
 export default Header;
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 /** Returns a human-readable relative timestamp, e.g. "3 min ago". */
 const relativeTime = (iso) => {
@@ -214,10 +403,9 @@ const TYPE_CONFIG = {
     },
 };
 
-const getTypeConfig = (type) =>
-    TYPE_CONFIG[type] || TYPE_CONFIG.info;
+const getTypeConfig = (type) => TYPE_CONFIG[type] || TYPE_CONFIG.info;
 
-// ─── NotificationsBell ───────────────────────────────────────────────────────
+// ─── NotificationsBell ────────────────────────────────────────────────────────
 
 const NotificationsBell = ({ selectedDevice }) => {
     const { notifications, markRead, clearAll } = useNotifications();

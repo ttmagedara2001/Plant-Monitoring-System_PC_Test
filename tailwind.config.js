@@ -59,8 +59,17 @@ export default {
         },
       },
       fontFamily: {
-        sans: ["system-ui", "-apple-system", "sans-serif"],
+        sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+        inter: ["Inter", "system-ui", "sans-serif"],
         mono: ["ui-monospace", "monospace"],
+      },
+      colors: {
+        brand: {
+          bg: "#060B26",
+          border: "#5530FA",
+          purple: "#A48FFF",
+          purpleDark: "#7C5CFA",
+        },
       },
     },
   },
