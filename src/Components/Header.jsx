@@ -52,27 +52,20 @@ const BrandBar = () => {
                 WebkitBackdropFilter: 'blur(16px)',
             }}
         >
-            {/* ── Mobile portrait (<640px): Left = compact "View Full Code" ── */}
+            {/* ── Mobile portrait (<640px): Left = Protonest logo linking to website ── */}
             <div className="flex sm:hidden items-center flex-shrink-0">
                 <a
-                    href="https://github.com/ProtonestIoT/PC-Plant-monitoring-system"
+                    href="https://protonestconnect.co/"
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-white font-semibold rounded-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A48FFF]"
-                    style={{
-                        fontFamily: "'Inter', system-ui, sans-serif",
-                        fontSize: '11px',
-                        fontWeight: 600,
-                        padding: '6px 10px',
-                        background: 'rgba(164, 143, 255, 0.12)',
-                        border: '1px solid rgba(164, 143, 255, 0.3)',
-                        backdropFilter: 'blur(6px)',
-                        WebkitBackdropFilter: 'blur(6px)',
-                        borderRadius: '8px',
-                        whiteSpace: 'nowrap',
-                    }}
+                    aria-label="Protonest — Go back to website"
+                    className="transition-all duration-200 hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A48FFF] rounded-lg"
                 >
-                    {'</>'}  Code
+                    <img
+                        src={protonestLogo}
+                        alt="Protonest"
+                        className="h-9 w-9 object-contain"
+                    />
                 </a>
             </div>
 
@@ -183,13 +176,28 @@ const BrandBar = () => {
                 )}
             </div>
 
-            {/* ── Mobile portrait (<640px): Right = Protonest logo icon only ── */}
+            {/* ── Mobile portrait (<640px): Right = compact "View Full Code" ── */}
             <div className="flex sm:hidden items-center flex-shrink-0">
-                <img
-                    src={protonestLogo}
-                    alt="Protonest"
-                    className="h-8 w-8 object-contain"
-                />
+                <a
+                    href="https://github.com/ProtonestIoT/PC-Plant-monitoring-system"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-white font-semibold rounded-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A48FFF]"
+                    style={{
+                        fontFamily: "'Inter', system-ui, sans-serif",
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        padding: '6px 10px',
+                        background: 'rgba(164, 143, 255, 0.12)',
+                        border: '1px solid rgba(164, 143, 255, 0.3)',
+                        backdropFilter: 'blur(6px)',
+                        WebkitBackdropFilter: 'blur(6px)',
+                        borderRadius: '8px',
+                        whiteSpace: 'nowrap',
+                    }}
+                >
+                    {'</>'}&nbsp;Code
+                </a>
             </div>
 
             {/* ── Desktop (sm+): Right = "View Full Code" button ── */}
