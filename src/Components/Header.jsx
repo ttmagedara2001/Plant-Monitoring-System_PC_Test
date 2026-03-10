@@ -116,7 +116,7 @@ const BrandBar = () => {
                             letterSpacing: '-0.01em',
                         }}
                     >
-                        Plant Monitoring Systems
+                        Plant Monitoring System
                     </span>
                     <ChevronDown
                         className={`w-4 h-4 sm:w-5 sm:h-5 text-white/70 group-hover:text-white transition-all duration-300 ${titleOpen ? 'rotate-180 text-[#A48FFF]' : ''}`}
