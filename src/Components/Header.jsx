@@ -140,8 +140,7 @@ const BrandBar = () => {
                             <a
                                 key={label}
                                 href={href}
-                                target="_blank"
-                                rel="noreferrer"
+                                target="_self"
                                 className={`w-full text-left px-4 py-3.5 text-sm transition-all duration-150 flex items-center gap-3 border-b border-white/5 last:border-0 ${active ? 'text-white bg-white/5' : 'text-white/70 hover:text-white hover:bg-white/5'}`}
                                 style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
                                 onClick={() => setTitleOpen(false)}
