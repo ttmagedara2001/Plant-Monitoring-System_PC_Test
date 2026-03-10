@@ -41,19 +41,43 @@ const BrandBar = () => {
 
     return (
         <div
-            className="w-full flex items-center justify-between px-6 md:px-10"
+            className="brand-bar w-full flex items-center justify-between px-3 sm:px-6 md:px-10"
             style={{
                 position: 'relative',   /* own stacking context → dropdown renders above AgriCop tier */
                 zIndex: 300,
-                height: '88px',
+                height: '88px',         /* overridden to 60px on portrait mobile via CSS */
                 backgroundColor: '#060B26',
                 borderBottom: '1px solid #5530FA',
                 backdropFilter: 'blur(16px)',
                 WebkitBackdropFilter: 'blur(16px)',
             }}
         >
-            {/* ── Left: Protonest logo + back link ── */}
-            <div className="flex items-center min-w-[160px]">
+            {/* ── Mobile portrait (<640px): Left = compact "View Full Code" ── */}
+            <div className="flex sm:hidden items-center flex-shrink-0">
+                <a
+                    href="https://github.com/ProtonestIoT/PC-Plant-monitoring-system"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-white font-semibold rounded-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A48FFF]"
+                    style={{
+                        fontFamily: "'Inter', system-ui, sans-serif",
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        padding: '6px 10px',
+                        background: 'rgba(164, 143, 255, 0.12)',
+                        border: '1px solid rgba(164, 143, 255, 0.3)',
+                        backdropFilter: 'blur(6px)',
+                        WebkitBackdropFilter: 'blur(6px)',
+                        borderRadius: '8px',
+                        whiteSpace: 'nowrap',
+                    }}
+                >
+                    {'</>'}  Code
+                </a>
+            </div>
+
+            {/* ── Desktop (sm+): Left = Protonest logo + back link ── */}
+            <div className="hidden sm:flex items-center min-w-[160px]">
                 <a
                     href="https://protonestconnect.co/"
                     target="_blank"
@@ -85,13 +109,13 @@ const BrandBar = () => {
             <div className="flex-1 flex justify-center">
                 <button
                     onClick={() => setTitleOpen(v => !v)}
-                    className="flex items-center gap-2 group px-4 py-2 rounded-xl hover:bg-white/5 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A48FFF]"
+                    className="flex items-center gap-1 sm:gap-2 group px-2 sm:px-4 py-2 rounded-xl hover:bg-white/5 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A48FFF]"
                     aria-expanded={titleOpen}
                     aria-haspopup="listbox"
                     id="pms-title-btn"
                 >
                     <span
-                        className="text-white select-none"
+                        className="pms-title-text text-white select-none"
                         style={{
                             fontFamily: "'Inter', system-ui, sans-serif",
                             fontSize: '20px',
@@ -102,15 +126,16 @@ const BrandBar = () => {
                         Plant Monitoring Systems
                     </span>
                     <ChevronDown
-                        className={`w-5 h-5 text-white/70 group-hover:text-white transition-all duration-300 ${titleOpen ? 'rotate-180 text-[#A48FFF]' : ''}`}
+                        className={`w-4 h-4 sm:w-5 sm:h-5 text-white/70 group-hover:text-white transition-all duration-300 ${titleOpen ? 'rotate-180 text-[#A48FFF]' : ''}`}
                     />
                 </button>
 
-                {/* Drop-down flyout — z-[200] so it renders above the white AgriCop header */}
+                {/* Drop-down flyout */}
                 {titleOpen && (
                     <div
-                        className="absolute top-[88px] left-1/2 -translate-x-1/2 z-[200] mt-1 w-72 rounded-xl shadow-2xl overflow-hidden"
+                        className="brand-bar-dropdown absolute left-1/2 -translate-x-1/2 z-[200] mt-1 w-64 sm:w-72 rounded-xl shadow-2xl overflow-hidden"
                         style={{
+                            top: '60px',    /* overridden to 88px on sm+ via CSS */
                             background: 'rgba(6, 11, 38, 0.97)',
                             border: '1px solid rgba(85, 48, 250, 0.5)',
                             backdropFilter: 'blur(20px)',
@@ -141,7 +166,7 @@ const BrandBar = () => {
                                 key={label}
                                 href={href}
                                 target="_self"
-                                className={`w-full text-left px-4 py-3.5 text-sm transition-all duration-150 flex items-center gap-3 border-b border-white/5 last:border-0 ${active ? 'text-white bg-white/5' : 'text-white/70 hover:text-white hover:bg-white/5'}`}
+                                className={`w-full text-left px-4 py-3 sm:py-3.5 text-xs sm:text-sm transition-all duration-150 flex items-center gap-3 border-b border-white/5 last:border-0 ${active ? 'text-white bg-white/5' : 'text-white/70 hover:text-white hover:bg-white/5'}`}
                                 style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
                                 onClick={() => setTitleOpen(false)}
                             >
@@ -158,8 +183,17 @@ const BrandBar = () => {
                 )}
             </div>
 
-            {/* ── Right: "View Full Code" button ── */}
-            <div className="flex items-center justify-end min-w-[160px]">
+            {/* ── Mobile portrait (<640px): Right = Protonest logo icon only ── */}
+            <div className="flex sm:hidden items-center flex-shrink-0">
+                <img
+                    src={protonestLogo}
+                    alt="Protonest"
+                    className="h-8 w-8 object-contain"
+                />
+            </div>
+
+            {/* ── Desktop (sm+): Right = "View Full Code" button ── */}
+            <div className="hidden sm:flex items-center justify-end min-w-[160px]">
                 <a
                     href="https://github.com/ProtonestIoT/PC-Plant-monitoring-system"
                     target="_blank"

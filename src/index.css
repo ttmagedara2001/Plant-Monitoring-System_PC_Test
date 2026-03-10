@@ -114,3 +114,74 @@ body {
   transform: translateY(0);
   background: rgba(164, 143, 255, 0.30) !important;
 }
+
+/* ─── Portrait Mobile (phones in portrait, max 639px wide) ───────────────────   All rules here are scoped to portrait + mobile so the PC view is untouched.
+   ─────────────────────────────────────────────────────────────────────────── */
+@media (orientation: portrait) and (max-width: 639px) {
+
+  /* ── Brand bar: compact 60px height ── */
+  .brand-bar {
+    height: 60px !important;
+  }
+
+  /* ── Brand bar dropdown: position below the compact 60px bar ── */
+  .brand-bar-dropdown {
+    top: 60px !important;
+  }
+
+  /* ── Title text in brand bar: smaller on mobile portrait ── */
+  .pms-title-text {
+    font-size: 13px !important;
+    letter-spacing: -0.01em;
+  }
+
+  /* ── Show the side nav rail on portrait mobile ── */
+  .portrait-side-nav {
+    display: flex !important;
+  }
+
+  /* ── Main content: offset left by the side nav width (56px) ── */
+  .portrait-main-content {
+    padding-left: 56px;
+  }
+
+  /* ── General font size reduction for portrait mobile ── */
+  .App {
+    font-size: 13px;
+  }
+
+  /* Cards, labels, status text */
+  .App h1, .App h2 { font-size: 1.1rem; }
+  .App h3           { font-size: 1rem; }
+  .App h4, .App h5  { font-size: 0.875rem; }
+
+  /* Tailwind overrides for portrait mobile small text */
+  .App .text-base    { font-size: 0.8125rem !important; }
+  .App .text-sm      { font-size: 0.75rem  !important; }
+  .App .text-xs      { font-size: 0.6875rem !important; }
+  .App .text-lg      { font-size: 0.9375rem !important; }
+  .App .text-xl      { font-size: 1.05rem   !important; }
+  .App .text-2xl     { font-size: 1.15rem   !important; }
+
+  /* Reduce padding inside cards to reclaim horizontal space */
+  .App .p-4   { padding: 0.625rem !important; }
+  .App .p-6   { padding: 0.75rem  !important; }
+  .App .px-4  { padding-left: 0.625rem !important; padding-right: 0.625rem !important; }
+  .App .px-6  { padding-left: 0.75rem  !important; padding-right: 0.75rem  !important; }
+
+  /* Sensor stat numbers stay readable */
+  .App .text-3xl { font-size: 1.4rem !important; }
+  .App .text-4xl { font-size: 1.6rem !important; }
+
+  /* Prevent iOS tap zoom on inputs/buttons */
+  button, select, input, textarea {
+    font-size: 16px;
+  }
+}
+
+/* ─── Tablet / Desktop: restore dropdown correct top offset ─────────────── */
+@media (min-width: 640px) {
+  .brand-bar-dropdown {
+    top: 88px !important;
+  }
+}

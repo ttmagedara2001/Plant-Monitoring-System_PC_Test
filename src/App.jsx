@@ -23,6 +23,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import ErrorBoundary from './Components/ErrorBoundary';
 import Header from './Components/Header';
 import StatusBar from './Components/StatusBar';
+import MobilePortraitSideNav from './Components/MobilePortraitSideNav';
 import Dashboard from './Components/Dashboard';
 import DeviceSettingsPage from './Components/DeviceSettingsPage';
 import { useNotifications } from './Context/NotificationContext';
@@ -269,8 +270,12 @@ function App() {
 
                 <StatusBar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-                {/* Main content — padding accounts for fixed BrandBar (88px) + AgriCop Header + gap + StatusBar */}
-                <main className="w-full pt-[220px] landscape:pt-[196px] sm:pt-[232px] md:pt-[252px]">
+                {/* Portrait mobile side nav (icon rail for Dashboard / Settings) */}
+                <MobilePortraitSideNav activeTab={activeTab} setActiveTab={setActiveTab} />
+
+                {/* Main content — padding accounts for fixed BrandBar + AgriCop Header + StatusBar.
+                    portrait-main-content class adds left offset for side nav on portrait mobile. */}
+                <main className="portrait-main-content w-full pt-[120px] landscape:pt-[196px] sm:pt-[232px] md:pt-[252px]">
                     {activeTab === 'dashboard' ? (
                         <Dashboard
                             deviceId={selectedDevice}
