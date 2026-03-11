@@ -13,7 +13,7 @@ const MobilePortraitSideNav = ({ activeTab, setActiveTab }) => {
             className="portrait-side-nav fixed left-0 flex-col items-center z-40 gap-2 py-4 hidden"
             style={{
                 /* top is set via CSS to match the dynamic header height */
-                top: '116px',
+                top: '220px',
                 bottom: 0,
                 width: '56px',
                 backgroundColor: '#ffffff',

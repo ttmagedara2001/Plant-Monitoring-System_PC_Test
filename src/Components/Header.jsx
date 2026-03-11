@@ -41,189 +41,227 @@ const BrandBar = () => {
 
     return (
         <div
-            className="brand-bar w-full flex items-center justify-between px-3 sm:px-6 md:px-10"
+            className="brand-bar w-full px-3 sm:px-6 md:px-10"
             style={{
                 position: 'relative',   /* own stacking context → dropdown renders above AgriCop tier */
                 zIndex: 300,
-                height: '88px',         /* overridden to 60px on portrait mobile via CSS */
                 backgroundColor: '#060B26',
                 borderBottom: '1px solid #5530FA',
                 backdropFilter: 'blur(16px)',
                 WebkitBackdropFilter: 'blur(16px)',
             }}
         >
-            {/* ── Mobile portrait (<640px): Left = Protonest logo linking to website ── */}
-            <div className="flex sm:hidden items-center flex-shrink-0">
-                <a
-                    href="https://protonestconnect.co/"
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label="Protonest — Go back to website"
-                    className="transition-all duration-200 hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A48FFF] rounded-lg"
-                >
-                    <img
-                        src={protonestLogo}
-                        alt="Protonest"
-                        className="h-9 w-9 object-contain"
-                    />
-                </a>
-            </div>
+            {/* ══════════════════════════════════════════════════════════════
+                Portrait mobile (<640 px): 3-row stacked layout
+                Row 1 → ‹ Go Back (left)  |  Logo (centre)  |  spacer (right)
+                Row 2 → System title + chevron (centre)
+                Row 3 → View Full Code button (full-width)
+                ══════════════════════════════════════════════════════════════ */}
+            <div className="flex sm:hidden flex-col w-full pb-3">
 
-            {/* ── Desktop (sm+): Left = Protonest logo + back link ── */}
-            <div className="hidden sm:flex items-center min-w-[160px]">
-                <a
-                    href="https://protonestconnect.co/"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-2.5 group"
-                    aria-label="Protonest — Go back to website"
-                >
-                    {/* Protonest M-logo */}
-                    <img
-                        src={protonestLogo}
-                        alt="Protonest logo"
-                        className="h-10 w-10 object-contain flex-shrink-0 transition-all duration-300 group-hover:scale-105"
-                    />
-                    {/* Back label — single line, matching Figma spec */}
-                    <span
-                        className="text-white/80 group-hover:text-white transition-colors duration-200 whitespace-nowrap"
-                        style={{
-                            fontFamily: "'Inter', system-ui, sans-serif",
-                            fontSize: '12px',
-                            fontWeight: 400,
-                        }}
+                {/* ── Row 1: Go Back + Logo ── */}
+                <div className="flex items-center w-full pt-3" style={{ minHeight: '44px' }}>
+                    <a
+                        href="https://protonestconnect.co/"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-1 text-white/70 hover:text-white transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A48FFF] rounded"
+                        aria-label="Protonest — Go back to website"
+                        style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: '13px', fontWeight: 500 }}
                     >
-                        ‹ Go Back To Website
-                    </span>
-                </a>
-            </div>
-
-            {/* ── Center: Title with dropdown chevron ── */}
-            <div className="flex-1 flex justify-center">
-                <button
-                    onClick={() => setTitleOpen(v => !v)}
-                    className="flex items-center gap-1 sm:gap-2 group px-2 sm:px-4 py-2 rounded-xl hover:bg-white/5 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A48FFF]"
-                    aria-expanded={titleOpen}
-                    aria-haspopup="listbox"
-                    id="pms-title-btn"
-                >
-                    <span
-                        className="pms-title-text text-white select-none"
-                        style={{
-                            fontFamily: "'Inter', system-ui, sans-serif",
-                            fontSize: '20px',
-                            fontWeight: 500,
-                            letterSpacing: '-0.01em',
-                        }}
-                    >
-                        Plant Monitoring System
-                    </span>
-                    <ChevronDown
-                        className={`w-4 h-4 sm:w-5 sm:h-5 text-white/70 group-hover:text-white transition-all duration-300 ${titleOpen ? 'rotate-180 text-[#A48FFF]' : ''}`}
-                    />
-                </button>
-
-                {/* Drop-down flyout */}
-                {titleOpen && (
-                    <div
-                        className="brand-bar-dropdown absolute left-1/2 -translate-x-1/2 z-[200] mt-1 w-64 sm:w-72 rounded-xl shadow-2xl overflow-hidden"
-                        style={{
-                            top: '60px',    /* overridden to 88px on sm+ via CSS */
-                            background: 'rgba(6, 11, 38, 0.97)',
-                            border: '1px solid rgba(85, 48, 250, 0.5)',
-                            backdropFilter: 'blur(20px)',
-                            WebkitBackdropFilter: 'blur(20px)',
-                        }}
-                    >
-                        <div className="px-4 py-3 border-b border-white/10">
-                            <p className="text-[#A48FFF] text-xs font-semibold uppercase tracking-widest">Switch System</p>
-                        </div>
-                        {[
-                            {
-                                label: 'Plant Monitoring System',
-                                href: 'https://ambitious-bay-0d5177503.4.azurestaticapps.net/',
-                                active: true,
-                            },
-                            {
-                                label: 'Factory Management System',
-                                href: 'https://witty-grass-0d4e8e603.6.azurestaticapps.net/',
-                                active: false,
-                            },
-                            {
-                                label: 'Fleet Management System',
-                                href: 'https://gentle-flower-091576403.6.azurestaticapps.net/',
-                                active: false,
-                            },
-                        ].map(({ label, href, active }) => (
-                            <a
-                                key={label}
-                                href={href}
-                                target="_self"
-                                className={`w-full text-left px-4 py-3 sm:py-3.5 text-xs sm:text-sm transition-all duration-150 flex items-center gap-3 border-b border-white/5 last:border-0 ${active ? 'text-white bg-white/5' : 'text-white/70 hover:text-white hover:bg-white/5'}`}
-                                style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
-                                onClick={() => setTitleOpen(false)}
-                            >
-                                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${active ? 'bg-[#A48FFF]' : 'bg-[#5530FA]'}`} />
-                                <span className="flex-1">{label}</span>
-                                {active && (
-                                    <span className="text-[10px] font-semibold text-[#A48FFF] uppercase tracking-wider bg-[#A48FFF]/10 px-1.5 py-0.5 rounded">
-                                        current
-                                    </span>
-                                )}
-                            </a>
-                        ))}
+                        ‹ Go Back
+                    </a>
+                    <div className="flex-1 flex justify-center">
+                        <img src={protonestLogo} alt="Protonest" className="h-9 w-9 object-contain" />
                     </div>
-                )}
+                    {/* Invisible spacer keeps logo visually centred */}
+                    <div style={{ width: '70px' }} aria-hidden="true" />
+                </div>
+
+                {/* ── Row 2: Title + chevron ── */}
+                <div className="flex justify-center mt-1">
+                    <button
+                        onClick={() => setTitleOpen(v => !v)}
+                        className="flex items-center gap-1 group px-3 py-1.5 rounded-xl hover:bg-white/5 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A48FFF]"
+                        aria-expanded={titleOpen}
+                        aria-haspopup="listbox"
+                        id="pms-title-btn"
+                    >
+                        <span
+                            className="pms-title-text text-white select-none"
+                            style={{
+                                fontFamily: "'Inter', system-ui, sans-serif",
+                                fontSize: '20px',
+                                fontWeight: 500,
+                                letterSpacing: '-0.01em',
+                            }}
+                        >
+                            Plant Monitoring System
+                        </span>
+                        <ChevronDown
+                            className={`w-4 h-4 text-white/70 group-hover:text-white transition-all duration-300 ${titleOpen ? 'rotate-180 text-[#A48FFF]' : ''}`}
+                        />
+                    </button>
+                </div>
+
+                {/* ── Row 3: View Full Code ── */}
+                <div className="flex justify-center mt-2 px-5">
+                    <a
+                        href="https://github.com/ProtonestIoT/PC-Plant-monitoring-system"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center justify-center font-semibold text-white rounded-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A48FFF]"
+                        style={{
+                            fontFamily: "'Inter', system-ui, sans-serif",
+                            fontSize: '14px',
+                            fontWeight: 600,
+                            padding: '10px 36px',
+                            background: 'rgba(164, 143, 255, 0.12)',
+                            border: '1px solid rgba(164, 143, 255, 0.3)',
+                            backdropFilter: 'blur(6px)',
+                            WebkitBackdropFilter: 'blur(6px)',
+                            borderRadius: '8px',
+                        }}
+                    >
+                        View Full Code
+                    </a>
+                </div>
             </div>
 
-            {/* ── Mobile portrait (<640px): Right = compact "View Full Code" ── */}
-            <div className="flex sm:hidden items-center flex-shrink-0">
-                <a
-                    href="https://github.com/ProtonestIoT/PC-Plant-monitoring-system"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-white font-semibold rounded-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A48FFF]"
-                    style={{
-                        fontFamily: "'Inter', system-ui, sans-serif",
-                        fontSize: '11px',
-                        fontWeight: 600,
-                        padding: '6px 10px',
-                        background: 'rgba(164, 143, 255, 0.12)',
-                        border: '1px solid rgba(164, 143, 255, 0.3)',
-                        backdropFilter: 'blur(6px)',
-                        WebkitBackdropFilter: 'blur(6px)',
-                        borderRadius: '8px',
-                        whiteSpace: 'nowrap',
-                    }}
-                >
-                    {'</>'}&nbsp;Code
-                </a>
+            {/* ══════════════════════════════════════════════════════════════
+                Desktop (sm+): single-row layout (unchanged)
+                ══════════════════════════════════════════════════════════════ */}
+            <div className="hidden sm:flex items-center justify-between w-full" style={{ height: '88px' }}>
+
+                {/* Left — Protonest logo + back link */}
+                <div className="flex items-center min-w-[160px]">
+                    <a
+                        href="https://protonestconnect.co/"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-2.5 group"
+                        aria-label="Protonest — Go back to website"
+                    >
+                        <img
+                            src={protonestLogo}
+                            alt="Protonest logo"
+                            className="h-10 w-10 object-contain flex-shrink-0 transition-all duration-300 group-hover:scale-105"
+                        />
+                        <span
+                            className="text-white/80 group-hover:text-white transition-colors duration-200 whitespace-nowrap"
+                            style={{
+                                fontFamily: "'Inter', system-ui, sans-serif",
+                                fontSize: '12px',
+                                fontWeight: 400,
+                            }}
+                        >
+                            ‹ Go Back To Website
+                        </span>
+                    </a>
+                </div>
+
+                {/* Centre — system title + chevron */}
+                <div className="flex-1 flex justify-center">
+                    <button
+                        onClick={() => setTitleOpen(v => !v)}
+                        className="flex items-center gap-2 group px-4 py-2 rounded-xl hover:bg-white/5 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A48FFF]"
+                        aria-expanded={titleOpen}
+                        aria-haspopup="listbox"
+                    >
+                        <span
+                            className="pms-title-text text-white select-none"
+                            style={{
+                                fontFamily: "'Inter', system-ui, sans-serif",
+                                fontSize: '20px',
+                                fontWeight: 500,
+                                letterSpacing: '-0.01em',
+                            }}
+                        >
+                            Plant Monitoring System
+                        </span>
+                        <ChevronDown
+                            className={`w-5 h-5 text-white/70 group-hover:text-white transition-all duration-300 ${titleOpen ? 'rotate-180 text-[#A48FFF]' : ''}`}
+                        />
+                    </button>
+                </div>
+
+                {/* Right — View Full Code */}
+                <div className="flex items-center justify-end min-w-[160px]">
+                    <a
+                        href="https://github.com/ProtonestIoT/PC-Plant-monitoring-system"
+                        target="_blank"
+                        rel="noreferrer"
+                        id="view-full-code-btn"
+                        className="view-full-code-btn inline-flex items-center justify-center font-semibold text-white rounded-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A48FFF]"
+                        style={{
+                            width: '150px',
+                            height: '36px',
+                            fontFamily: "'Inter', system-ui, sans-serif",
+                            fontSize: '14px',
+                            fontWeight: 600,
+                            background: 'rgba(164, 143, 255, 0.12)',
+                            border: '1px solid rgba(164, 143, 255, 0.3)',
+                            backdropFilter: 'blur(6px)',
+                            WebkitBackdropFilter: 'blur(6px)',
+                            borderRadius: '8px',
+                        }}
+                    >
+                        View Full Code
+                    </a>
+                </div>
             </div>
 
-            {/* ── Desktop (sm+): Right = "View Full Code" button ── */}
-            <div className="hidden sm:flex items-center justify-end min-w-[160px]">
-                <a
-                    href="https://github.com/ProtonestIoT/PC-Plant-monitoring-system"
-                    target="_blank"
-                    rel="noreferrer"
-                    id="view-full-code-btn"
-                    className="view-full-code-btn inline-flex items-center justify-center font-semibold text-white rounded-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A48FFF]"
+            {/* ── Shared dropdown flyout (absolute-positioned from brand-bar) ── */}
+            {titleOpen && (
+                <div
+                    className="brand-bar-dropdown absolute left-1/2 -translate-x-1/2 z-[200] w-64 sm:w-72 rounded-xl shadow-2xl overflow-hidden"
                     style={{
-                        width: '150px',
-                        height: '36px',
-                        fontFamily: "'Inter', system-ui, sans-serif",
-                        fontSize: '14px',
-                        fontWeight: 600,
-                        background: 'rgba(164, 143, 255, 0.12)',
-                        border: '1px solid rgba(164, 143, 255, 0.3)',
-                        backdropFilter: 'blur(6px)',
-                        WebkitBackdropFilter: 'blur(6px)',
-                        borderRadius: '8px',
+                        top: '104px',   /* portrait: below title row; overridden to 88px on sm+ via CSS */
+                        background: 'rgba(6, 11, 38, 0.97)',
+                        border: '1px solid rgba(85, 48, 250, 0.5)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
                     }}
                 >
-                    View Full Code
-                </a>
-            </div>
+                    <div className="px-4 py-3 border-b border-white/10">
+                        <p className="text-[#A48FFF] text-xs font-semibold uppercase tracking-widest">Switch System</p>
+                    </div>
+                    {[
+                        {
+                            label: 'Plant Monitoring System',
+                            href: 'https://ambitious-bay-0d5177503.4.azurestaticapps.net/',
+                            active: true,
+                        },
+                        {
+                            label: 'Factory Management System',
+                            href: 'https://witty-grass-0d4e8e603.6.azurestaticapps.net/',
+                            active: false,
+                        },
+                        {
+                            label: 'Fleet Management System',
+                            href: 'https://gentle-flower-091576403.6.azurestaticapps.net/',
+                            active: false,
+                        },
+                    ].map(({ label, href, active }) => (
+                        <a
+                            key={label}
+                            href={href}
+                            target="_self"
+                            className={`w-full text-left px-4 py-3 sm:py-3.5 text-xs sm:text-sm transition-all duration-150 flex items-center gap-3 border-b border-white/5 last:border-0 ${active ? 'text-white bg-white/5' : 'text-white/70 hover:text-white hover:bg-white/5'}`}
+                            style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+                            onClick={() => setTitleOpen(false)}
+                        >
+                            <span className={`w-2 h-2 rounded-full flex-shrink-0 ${active ? 'bg-[#A48FFF]' : 'bg-[#5530FA]'}`} />
+                            <span className="flex-1">{label}</span>
+                            {active && (
+                                <span className="text-[10px] font-semibold text-[#A48FFF] uppercase tracking-wider bg-[#A48FFF]/10 px-1.5 py-0.5 rounded">
+                                    current
+                                </span>
+                            )}
+                        </a>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

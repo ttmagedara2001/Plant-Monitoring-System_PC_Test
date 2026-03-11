@@ -115,24 +115,27 @@ body {
   background: rgba(164, 143, 255, 0.30) !important;
 }
 
-/* ─── Portrait Mobile (phones in portrait, max 639px wide) ───────────────────   All rules here are scoped to portrait + mobile so the PC view is untouched.
-   ─────────────────────────────────────────────────────────────────────────── */
+/* ─── Portrait Mobile (phones in portrait, max 639px wide) ───────────────────   All rules here are scoped to portrait + mobile so the PC view is untouched.   ─────────────────────────────────────────────────────────────────────────── */
 @media (orientation: portrait) and (max-width: 639px) {
 
-  /* ── Brand bar: compact 60px height ── */
-  .brand-bar {
-    height: 60px !important;
-  }
+  /* ── Brand bar: height is auto (3-row stacked layout on portrait) ── */
 
-  /* ── Brand bar dropdown: position below the compact 60px bar ── */
+  /* ── Brand bar dropdown: position below the title row (~row 2 bottom) ── */
   .brand-bar-dropdown {
-    top: 60px !important;
+    top: 104px !important;
   }
 
-  /* ── Title text in brand bar: smaller on mobile portrait ── */
+  /* ── Portrait-only: larger, lighter system title ── */
   .pms-title-text {
-    font-size: 13px !important;
-    letter-spacing: -0.01em;
+    font-size: 24px !important;
+    font-weight: 400 !important;
+    letter-spacing: 0em !important;
+  }
+
+  /* ── Portrait-only: slightly larger chevron next to title ── */
+  #pms-title-btn .lucide-chevron-down {
+    width: 20px !important;
+    height: 20px !important;
   }
 
   /* ── Show the side nav rail on portrait mobile ── */
@@ -185,3 +188,6 @@ body {
     top: 88px !important;
   }
 }
+
+/* ─── Portrait Mobile: re-align dropdown at the 184px mark in the brand-bar ──
+   (Already handled by the 104px value set in the portrait block above.)       */
