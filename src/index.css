@@ -127,7 +127,7 @@ body {
 
   /* ── Portrait-only: larger, lighter system title ── */
   .pms-title-text {
-    font-size: 24px !important;
+    font-size: 18px !important;
     font-weight: 400 !important;
     letter-spacing: 0em !important;
   }

@@ -91,7 +91,7 @@ const BrandBar = () => {
                             className="pms-title-text text-white select-none"
                             style={{
                                 fontFamily: "'Inter', system-ui, sans-serif",
-                                fontSize: '20px',
+                                fontSize: '16px',
                                 fontWeight: 500,
                                 letterSpacing: '-0.01em',
                             }}
@@ -172,7 +172,7 @@ const BrandBar = () => {
                             className="pms-title-text text-white select-none"
                             style={{
                                 fontFamily: "'Inter', system-ui, sans-serif",
-                                fontSize: '20px',
+                                fontSize: '16px',
                                 fontWeight: 500,
                                 letterSpacing: '-0.01em',
                             }}
