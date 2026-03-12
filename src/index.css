@@ -182,6 +182,20 @@ body {
   }
 }
 
+/* ─── PC / Desktop view: slightly larger base font ──────────────────────── */
+@media (min-width: 1024px) {
+  html {
+    font-size: 17px;
+  }
+}
+
+/* ─── Mobile landscape: slightly larger base font ───────────────────────── */
+@media (orientation: landscape) and (max-width: 1023px) and (max-height: 600px) {
+  html {
+    font-size: 17px;
+  }
+}
+
 /* ─── Tablet / Desktop: restore dropdown correct top offset ─────────────── */
 @media (min-width: 640px) {
   .brand-bar-dropdown {
