@@ -257,6 +257,34 @@ function App() {
     }, [settings?.autoMode, settings?.moistureMin, liveData?.moisture, selectedDevice, liveData?.pumpStatus, addNotification]);
 
     // ── Render ──────────────────────────────────────────────────────────
+    useEffect(() => {
+        const updatePortraitOffsets = () => {
+            if (typeof window === 'undefined') return;
+            const isPortraitMobile = window.matchMedia('(orientation: portrait) and (max-width: 639px)').matches;
+            const root = document.documentElement;
+
+            if (!isPortraitMobile) {
+                root.style.removeProperty('--portrait-fixed-offset');
+                return;
+            }
+
+            const headerEl = document.querySelector('header[data-fixed-app-header="true"]');
+            if (!headerEl) return;
+
+            const headerHeight = Math.ceil(headerEl.getBoundingClientRect().height);
+            root.style.setProperty('--portrait-fixed-offset', `${headerHeight + 8}px`);
+        };
+
+        updatePortraitOffsets();
+        window.addEventListener('resize', updatePortraitOffsets);
+        window.addEventListener('orientationchange', updatePortraitOffsets);
+
+        return () => {
+            window.removeEventListener('resize', updatePortraitOffsets);
+            window.removeEventListener('orientationchange', updatePortraitOffsets);
+        };
+    }, []);
+
     return (
         <ErrorBoundary>
             <div className="App">

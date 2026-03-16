@@ -141,11 +141,20 @@ body {
   /* ── Show the side nav rail on portrait mobile ── */
   .portrait-side-nav {
     display: flex !important;
+    top: var(--portrait-fixed-offset, 220px) !important;
+    z-index: 45 !important;
   }
 
-  /* ── Main content: offset left by the side nav width (56px) ── */
+  /* ── Main content: offset below fixed header and beside the side nav ── */
   .portrait-main-content {
     padding-left: 56px;
+    padding-top: calc(var(--portrait-fixed-offset, 220px) + 8px) !important;
+  }
+
+  /* ── Hide redundant portrait nav controls (side rail is primary nav) ── */
+  .mobile-menu-trigger,
+  .mobile-menu-panel {
+    display: none !important;
   }
 
   /* ── General font size reduction for portrait mobile ── */

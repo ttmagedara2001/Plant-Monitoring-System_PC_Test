@@ -319,7 +319,11 @@ const Header = ({
     }, []);
 
     return (
-        <header className="fixed inset-x-0 top-0 z-50 flex flex-col" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+        <header
+            className="fixed inset-x-0 top-0 z-50 flex flex-col"
+            style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+            data-fixed-app-header="true"
+        >
 
             {/* ── Tier 1: Brand Bar (Figma spec) ── */}
             <BrandBar />
@@ -331,7 +335,7 @@ const Header = ({
                     {/* Mobile bar */}
                     <div className="w-full flex items-center justify-between sm:hidden">
                         <div className="flex items-center gap-1.5">
-                            <button aria-label="Open menu" onClick={() => setMobileOpen((v) => !v)} className="p-1 rounded-md hover:bg-gray-100">
+                            <button aria-label="Open menu" onClick={() => setMobileOpen((v) => !v)} className="mobile-menu-trigger p-1 rounded-md hover:bg-gray-100">
                                 <svg className="w-5 h-5 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
                             </button>
                             <div className="flex items-center gap-1">
@@ -349,7 +353,7 @@ const Header = ({
 
                     {/* Mobile menu panel */}
                     {mobileOpen && (
-                        <div ref={mobileRef} className="sm:hidden absolute left-2 right-2 top-14 bg-white border rounded-lg shadow-lg z-50 px-3 py-3 max-h-[80vh] overflow-y-auto">
+                        <div ref={mobileRef} className="mobile-menu-panel sm:hidden absolute left-2 right-2 top-14 bg-white border rounded-lg shadow-lg z-50 px-3 py-3 max-h-[80vh] overflow-y-auto">
                             <div className="flex flex-col gap-3">
                                 <div className="flex items-center justify-between pb-2 border-b">
                                     <div className="flex items-center gap-2">
